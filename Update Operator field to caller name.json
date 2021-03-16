@@ -1,0 +1,77 @@
+{
+    "formatVersion": "2.10",
+    "exportDate": 1615914486664,
+    "actionSequence": {
+        "name": "TOT - Update Operator field to caller name",
+        "description": "2021-03-16\n\nAuthor: BenS\n\nUpdates Operator field with value in Step 1 - determined by the Operator UNID.. Step 2 Gets the callers name from the incident. Step 3 fills out the operator ID if there is an operator with the same dynamic name as the caller.",
+        "structureName": "incident2",
+        "configuration": {
+            "variables": [
+                {
+                    "name": "TOPdesk_user",
+                    "value": "Ben"
+                },
+                {
+                    "name": "TOPdesk_applicationpassword",
+                    "value": "43j5n-fokau-2fuj3-3ifzj-bw5l7"
+                },
+                {
+                    "name": "TOPdesk_url",
+                    "value": "https://ca-demo-4.topdesk.net"
+                }
+            ],
+            "mappingDefinitions": [],
+            "steps": [
+                {
+                    "name": "Get_Operator_List",
+                    "method": "GET",
+                    "url": "${_variables.TOPdesk_url?no_esc}/tas/api/operators?page_size=100",
+                    "headers": [
+                        {
+                            "name": "Authorization",
+                            "value": "Basic  ${_base64(_variables.TOPdesk_user + \":\" + _variables.TOPdesk_applicationpassword)}"
+                        }
+                    ],
+                    "escapeBodyValues": true,
+                    "body": "",
+                    "executionCondition": "ONLY_WHEN_PREVIOUS_SUCCEEDED",
+                    "customExecutionCondition": ""
+                },
+                {
+                    "name": "Get_Incident_Number",
+                    "method": "GET",
+                    "url": "${_variables.TOPdesk_url?no_esc}/tas/api/incidents/number/${naam}",
+                    "headers": [
+                        {
+                            "name": "Authorization",
+                            "value": "Basic  ${_base64(_variables.TOPdesk_user + \":\" + _variables.TOPdesk_applicationpassword)}"
+                        }
+                    ],
+                    "escapeBodyValues": true,
+                    "body": "",
+                    "executionCondition": "ONLY_WHEN_PREVIOUS_SUCCEEDED",
+                    "customExecutionCondition": ""
+                },
+                {
+                    "name": "Update_Operator_Field",
+                    "method": "PUT",
+                    "url": "${_variables.TOPdesk_url?no_esc}/tas/api/incidents/id/${unid}",
+                    "headers": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Authorization",
+                            "value": "Basic  ${_base64(_variables.TOPdesk_user + \":\" + _variables.TOPdesk_applicationpassword)}"
+                        }
+                    ],
+                    "escapeBodyValues": true,
+                    "body": "{\n\"operator\" : {\"id\": \"<#list _responses.Get_Operator_List.body as operator><#if operator.dynamicName == _responses.Get_Incident_Number.body.caller.dynamicName >${operator.id}</#if></#list>\" }\n}",
+                    "executionCondition": "ONLY_WHEN_PREVIOUS_SUCCEEDED",
+                    "customExecutionCondition": ""
+                }
+            ]
+        }
+    }
+}
