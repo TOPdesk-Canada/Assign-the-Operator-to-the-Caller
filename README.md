@@ -1,7 +1,7 @@
 # Assign-the-Operator-to-the-Caller
 
 Summary:
-- assigns the operator to the caller, based on their matching Dynamic Name
+- assigns the operator to the caller, based on their matching Dynamic Name. The API looks up the operator list, and assigns an operator to the card, if they have the same name as the caller.
 
 Use Case:
 - Make a form in the self service portal that is only available to a persons group that contains your the same persons as your operator list. Then you can make form for your operators (as persons) in the Self Service Portal(SSP), which will automatically be assigned to their respective operator account. This may be required because they prefer the mobile interface of the SSP or because they want to answer a bunch of questions directly through the form. The event that triggers this action is usually a new card using a dropdown value that is preassigned to the form, such as "Type": "Operator Form"
